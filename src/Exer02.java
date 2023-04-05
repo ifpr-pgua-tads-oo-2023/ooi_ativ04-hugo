@@ -2,6 +2,45 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Exer02{
+    static Scanner teclado = new Scanner(System.in);
+    static Random rand = new Random(System.currentTimeMillis());
+
+    static int lerQuantidadeJogos(){
+        int quantidadeJogos;
+        do{
+            System.out.println("Digite a quantidade de jogos (1,2,3):");
+            quantidadeJogos = teclado.nextInt();
+            if(quantidadeJogos < 1 || quantidadeJogos > 3){
+                System.out.println("Quantidade inválida!!!");
+            }
+        }while(quantidadeJogos < 1 || quantidadeJogos > 3);
+        return quantidadeJogos;
+    }
+
+    static boolean verificarRepeticao(int num, int[] vetor){
+        for(int k=0;k<vetor.length;k++){
+            if(vetor[k]==num){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static boolean verificarEscolhaValida(int num){
+        return num>=1 && num<=60;
+    }
+
+    static int contarAcertos(int[] escolhas, int[] sorteados){
+        int numeroAcertos = 0;
+        for(int j=0;j<6;j++){
+            for(int k=0;k<6;k++){
+                if(escolhas[j]==sorteados[k]){
+                    numeroAcertos += 1;
+                }
+            }
+        }
+        return numeroAcertos;
+    }
 
 
     static void imprimeVetor(int[] vetor){
@@ -13,10 +52,7 @@ public class Exer02{
     }
 
     public static void main(String[] args) {
-        Scanner teclado = new Scanner(System.in);
-
-        Random rand = new Random(System.currentTimeMillis());
-
+        
         int quantidadeJogos;
         int escolhaUsuario;
         int[][] jogosUsuario;
@@ -26,14 +62,8 @@ public class Exer02{
         int[] sorteioComputador = new int[6];
         int numeroSorteado;
 
-        do{
-            System.out.println("Digite a quantidade de jogos (1,2,3):");
-            quantidadeJogos = teclado.nextInt();
-            if(quantidadeJogos < 1 || quantidadeJogos > 3){
-                System.out.println("Quantidade inválida!!!");
-            }
-        }while(quantidadeJogos < 1 || quantidadeJogos > 3);
-        
+        quantidadeJogos = lerQuantidadeJogos();
+
         //alocar a matriz dos jogos
         jogosUsuario = new int[quantidadeJogos][6];
 
@@ -43,12 +73,8 @@ public class Exer02{
                     repetiuEscolha = false;
                     System.out.println("Digite a escolha "+(j+1)+" do jogo "+(i+1)+":");
                     escolhaUsuario = teclado.nextInt();
-                    for(int k=0;k<6;k++){
-                        if(jogosUsuario[i][k]==escolhaUsuario){
-                            repetiuEscolha = true;
-                        }
-                    }
-                }while((escolhaUsuario < 1 || escolhaUsuario > 60) || repetiuEscolha==true);
+                    
+                }while(!verificarEscolhaValida(escolhaUsuario) || verificarRepeticao(escolhaUsuario, jogosUsuario[i]));
                 jogosUsuario[i][j] = escolhaUsuario;
             }
         }
@@ -57,26 +83,15 @@ public class Exer02{
         for(int i=0;i<6;i++){
             do{
                 numeroSorteado = (rand.nextInt(60)+1);
-                repetiuEscolha = false;
-                for(int k=0;k<6;k++){
-                    if(numeroSorteado == sorteioComputador[k]){
-                        repetiuEscolha = true;
-                    }
-                }
-            }while(repetiuEscolha);
+            }while(verificarRepeticao(numeroSorteado, sorteioComputador));
             sorteioComputador[i] = numeroSorteado;
         }
 
 
         for(int i=0;i<quantidadeJogos;i++){
-            numeroAcertos = 0;
-            for(int j=0;j<6;j++){
-                for(int k=0;k<6;k++){
-                    if(jogosUsuario[i][j]==sorteioComputador[k]){
-                        numeroAcertos += 1;
-                    }
-                }
-            }
+
+            numeroAcertos = contarAcertos(jogosUsuario[i], sorteioComputador);
+
             if(numeroAcertos == 6){
                 System.out.println("Ficou rico!!");
             }else if(numeroAcertos == 5){
